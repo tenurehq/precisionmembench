@@ -160,6 +160,20 @@ The eval files themselves never need to change.
 
 Results from merged PRs are reflected on the [live leaderboard](https://huggingface.co/spaces/tenurehq/precisionmembench).
 
+### Tenure
+
+Tenure's eval lives in the Tenure repo and runs directly against its
+`BeliefsReader` and `ContextBuilder` implementations. It is fully
+self-contained. The Atlas Local container starts and stops automatically. Reports land
+in test-results/. Results are re-produced on every pull request via CI.
+
+```bash
+git clone https://github.com/tenurehq/tenure.git
+cd tenure
+npm i
+npm run test:eval
+```
+
 ## Provider wrappers
 
 Each comparison provider is wrapped with a thin FastAPI service that normalises the `/add` / `/search` / `/reset` contract. Wrappers are in `wrappers/`.
