@@ -8,8 +8,6 @@ PrecisionMemBench is the first benchmark that measures retrieval precision indep
 
 Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](https://huggingface.co/datasets/tenurehq/precisionmembench) — Leaderboard: [HuggingFace Spaces](https://huggingface.co/spaces/tenurehq/precisionmembench)
 
----
-
 ## Results
 
 | System         | Active passes | Total passes | Mean precision | Mean recall | Retrieval p50 (ms) | Ingestion (s) |
@@ -26,8 +24,6 @@ The "recall 1.0" pattern for Vector, Mem0, and Hindsight is not a strength: it m
 
 The live leaderboard is maintained on [HuggingFace Spaces](https://huggingface.co/spaces/tenurehq/precisionmembench).
 
----
-
 ## Pass taxonomy
 
 Understanding the three pass types is required to interpret any results table.
@@ -39,8 +35,6 @@ Understanding the three pass types is required to interpret any results table.
 **Trivially empty pass** — the expected `relevantBeliefs` tier is empty by case design (empty query, `maxBeliefs: 0`, budget set to exact pinned count). Any system returning an empty set passes by construction. `retrievalPrecision` is null for these cases.
 
 Aggregate pass counts without this breakdown are misleading. Every comparison system's passes are either structural or trivially empty.
-
----
 
 ## Baseline reports
 
@@ -58,8 +52,6 @@ test-results/baseline/
 Each report contains per-case results including `passed`, `failures`, `retrievalPrecision`, `retrievalRecall`, and `retrievalLatencyMs`, plus aggregate `p50`/`p95` latency and mean precision/recall at the top level.
 
 When you run against your own provider, compare your output in `test-results/` directly against these files.
-
----
 
 ## Running the benchmark
 
@@ -84,7 +76,7 @@ MEMORY_PROVIDER=mem0 npx ava retrieval.external.eval.test.ts
 MEMORY_PROVIDER=mem0 npx ava session-retrieval.external.eval.test.ts
 ```
 
-Reports land in `test-results/`. Valid values: `mem0`, `zep`, `hindsight`, `memori`
+Reports land in `test-results/`. Valid values: `mem0`, `zep`, `hindsight`
 
 ### 3. Run the vector baseline
 
@@ -107,8 +99,6 @@ The Atlas Local container starts and stops automatically per run. Ports `27019` 
 python export_to_hf.py
 # Output: hf_export/leaderboard.json + hf_export/README.md
 ```
-
----
 
 ## Adding your provider
 
@@ -161,8 +151,6 @@ MEMORY_PROVIDER=myprovider npx ava session-retrieval.external.eval.test.ts
 
 The eval files themselves never need to change.
 
----
-
 ## Submitting results to the leaderboard
 
 1. Fork this repo.
@@ -171,8 +159,6 @@ The eval files themselves never need to change.
 4. Open a PR. Include the provider name, Docker image digest (if applicable), and any relevant configuration notes in the description.
 
 Results from merged PRs are reflected on the [live leaderboard](https://huggingface.co/spaces/tenurehq/precisionmembench).
-
----
 
 ## Provider wrappers
 
@@ -198,8 +184,6 @@ HINDSIGHT_URL=http://localhost:8888 python hindsight_wrapper.py
 ```bash
 cd wrappers && docker compose up
 ```
-
----
 
 ## Citation
 

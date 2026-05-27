@@ -20,7 +20,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Belief } from "../types/belief.js";
 
-export type ProviderName = "mem0" | "zep" | "memori" | "hindsight";
+export type ProviderName = "mem0" | "zep" | "hindsight";
 
 interface ProviderConfigJson {
   envVar: string;
