@@ -20,7 +20,7 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 
 **Active passes** - measure whether the memory system itself retrieved correctly, independent of what the model did with the results. Every other pass type leaves that question unanswered.
 
-Recall of 1.0 does not imply precision. A system can return the correct belief alongside many incorrect ones and still score perfectly on recall.
+Recall of 1.0 does not imply precision. A system can return the correct belief alongside many incorrect ones and still score perfectly on recall.
 
 The live leaderboard is maintained on [HuggingFace Spaces](https://huggingface.co/spaces/tenurehq/precisionmembench).
 
