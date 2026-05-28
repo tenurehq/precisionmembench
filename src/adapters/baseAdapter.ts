@@ -124,7 +124,7 @@ export class BaseAdapter {
     const total = beliefs.length;
     console.log(`\n⏳ Seeding ${total} beliefs to ${this.providerName}...\n`);
 
-    for (let i = 0; i < beliefs.length; i++) {
+    for (let i = 0; i < total; i++) {
       const belief = beliefs[i];
       const beliefId = belief._id as string;
       this.seedIndex.set(beliefId, belief);
@@ -165,7 +165,7 @@ export class BaseAdapter {
    * UniversalSessionAdapter overrides this to include extra fields.
    */
   protected seedMetadata(belief: Belief): Record<string, unknown> {
-    return { beliefId: belief._id };
+    return { beliefId: belief._id, scope: belief.scope[0] };
   }
 
   async buildContext(
@@ -190,6 +190,7 @@ export class BaseAdapter {
         ? await this.searchText(userId, rawQuery, {
             limit: b.maxBeliefs,
             excludeIds: pinnedIds,
+            scope: scope[0],
           })
         : [];
 
@@ -226,7 +227,7 @@ export class BaseAdapter {
   async searchText(
     userId: string,
     query: string,
-    opts?: { limit?: number; excludeIds?: Set<string> },
+    opts?: { limit?: number; excludeIds?: Set<string>; scope?: string },
   ): Promise<Belief[]> {
     if (!query.trim()) return [];
 
@@ -237,6 +238,7 @@ export class BaseAdapter {
         query,
         user_id: userId,
         limit: opts?.limit ?? 20,
+        scope: opts?.scope,
       }),
     });
 
