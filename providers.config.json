@@ -16,5 +16,11 @@
     "defaultUrl": "http://localhost:8080",
     "seedDelayMs": 5500,
     "beliefToText": "canonical_name_aliases"
+  },
+  "supermemory": {
+    "envVar": "SUPERMEMORY_URL",
+    "defaultUrl": "http://localhost:8080",
+    "seedDelayMs": 5500,
+    "beliefToText": "canonical_name_aliases"
   }
 }

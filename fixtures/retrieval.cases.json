@@ -59,8 +59,7 @@
         "shouldOnlyInclude": ["b-kubernetes-entity"]
       },
       "openQuestions": { "mustInclude": ["b-auth-open-q"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "out-of-scope-coin-collecting",
@@ -126,8 +125,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": ["b-db-decision"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "b-db-decision is pinned so verified in pinnedFacts. shouldOnlyInclude: [] subsumes the old mustExclude for b-sqlalchemy-superseded — it can't appear because only [] is allowed."
+    }
   },
   {
     "caseId": "edge-empty-query",
@@ -361,8 +359,7 @@
     "expect": {
       "pinnedFacts": { "mustExclude": ["b-narrator-voice"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "ranking-canonical-name-over-content",
@@ -374,8 +371,7 @@
       "relevantBeliefs": {
         "shouldOnlyInclude": ["b-composition-inheritance"]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "messy-typo-blind-spot",
@@ -386,8 +382,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": ["b-ts-pref"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "messy-all-caps-case-insensitive",
@@ -399,8 +394,7 @@
       "relevantBeliefs": {
         "shouldOnlyInclude": ["b-react-entity"]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "messy-filler-heavy-extraction",
@@ -412,8 +406,7 @@
       "relevantBeliefs": {
         "shouldOnlyInclude": ["b-error-handling"]
       }
-    },
-    "notes": "."
+    }
   },
   {
     "caseId": "messy-negation-surfaces-topic",
@@ -423,8 +416,7 @@
     "query": "I don't want class hierarchies in this codebase, what should I use instead?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-composition-inheritance"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "messy-compound-surfaces-two-beliefs",
@@ -436,8 +428,7 @@
       "relevantBeliefs": {
         "shouldOnlyInclude": ["b-react-entity", "b-error-handling"]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "cap-stress-compound-six-entities",
@@ -456,8 +447,7 @@
           "b-ts-pref"
         ]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "cap-stress-kitchen-sink-exceeds-twelve",
@@ -477,8 +467,7 @@
           "b-functional-pipeline"
         ]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "cap-stress-late-position-entity-at-risk",
@@ -497,8 +486,7 @@
           "b-error-handling"
         ]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "fuzzy-single-edit-fires-non-pinned",
@@ -508,8 +496,7 @@
     "query": "eror handling patterns",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-error-handling"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "fuzzy-scope-filter-discriminates-after-fuzzy-fires",
@@ -519,8 +506,7 @@
     "query": "Reedis cache eviction strategy",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-redis-code"] }
-    },
-    "notes": "Without scope filtering, both b-redis-code and b-redis-writing would appear. This case verifies the $match stage is doing the discrimination, not the search stage."
+    }
   },
   {
     "caseId": "fuzzy-prefix-blocks-transitive-match",
@@ -530,8 +516,7 @@
     "query": "mango connection pooling",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "prefixLength: 2 is doing the blocking, not scope filtering."
+    }
   },
   {
     "caseId": "fuzzy-abbreviation-prefix-blind-spot",
@@ -542,8 +527,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Text search missed it — k9s prefix 'k9' does not match 'k8'. This is the fundamental brittleness of single-character aliases."
+    }
   },
   {
     "caseId": "fuzzy-two-edit-transposition-blocked",
@@ -554,8 +538,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": ["b-ts-pref"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "fuzzy-single-term-only-signal",
@@ -566,8 +549,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": ["b-mongo-raw-driver"] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "universal-scope-belief-content-in-persona-prelude",
@@ -581,8 +563,7 @@
         "contains": ["direct", "preamble"]
       },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Companion to out-of-scope-coin-collecting. Verifies universal belief content injection is not domain-gated. Requires personaPrelude.contains support in the test runner."
+    }
   },
   {
     "caseId": "type-isolation-open-question-not-in-relevant",
@@ -594,8 +575,7 @@
       "pinnedFacts": { "mustExclude": ["b-auth-open-q"] },
       "openQuestions": { "mustInclude": ["b-auth-open-q"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "b-auth-open-q has aliases [JWT, session tokens, authentication] — the query matches all three. Pinned + alias-matched is the maximum surface pressure possible. Verifies that type routing takes precedence over both pin status and retrieval score."
+    }
   },
   {
     "caseId": "multi-hop-supersession-chain-all-excluded",
@@ -606,8 +586,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": ["b-linting-current"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "shouldOnlyInclude: [] subsumes explicit mustExclude for both b-linting-v0 (ESLint→Biome hop) and b-linting-v1 (TSLint→ESLint hop). The existing conflict-mongodb-supersedes-sqlalchemy case only tests a single hop; this verifies the filter holds at depth. If this case starts failing while the single-hop case passes, the filter is traversing exactly one link."
+    }
   },
   {
     "caseId": "cross-scope-one-empty-domain-does-not-degrade",
@@ -617,8 +596,7 @@
     "query": "What are we using Redis for?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-redis-code"] }
-    },
-    "notes": "Without null-safe handling of the empty scope branch in the $or aggregation, this either errors or returns degraded code-scope results. b-redis-writing must not appear — domain:writing is not in scope. Compare with multi-scope-redis-both-surfaces which tests two populated scopes."
+    }
   },
   {
     "caseId": "ranking-orderedbefore-alias-beats-content",
@@ -643,8 +621,7 @@
     "expect": {
       "personaPrelude": { "isNull": true },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "EVAL_PERSONA.get returns null for non-USER_ID users — both preludes must be empty strings / null. Protects against a cold-start NullPointerError or empty-cursor exception in BeliefsReader or ContextBuilder. The most likely real regression path: a new user's first session."
+    }
   },
   {
     "caseId": "narrator-voice-pinned-in-own-scope",
@@ -663,8 +640,7 @@
       },
       "openQuestions": { "mustInclude": ["b-chapter-structure-q"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Symmetric counterpart to edge-empty-query (code scope). The user-edited-absent-without-flag case only verifies b-narrator-voice does NOT appear in code scope — it never verifies it DOES appear in its own writing scope pinnedFacts. A regression in listPinnedFacts scope filtering could pass the former while silently breaking the latter."
+    }
   },
   {
     "caseId": "multi-scope-prelude-uses-primary-scope-only",
@@ -675,8 +651,7 @@
     "expect": {
       "personaPrelude": { "nonEmpty": true },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "scopePrelude was removed. personaPrelude is universal only. Scope-specific content surfaces through pinned beliefs and relevant beliefs, not the persona block."
+    }
   },
   {
     "caseId": "why-it-matters-not-indexed-blind-spot",
@@ -686,8 +661,7 @@
     "query": "Vue component architecture",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "b-react-entity.why_it_matters: '...to assume React 18 with hooks rather than Vue or Svelte.' Neither 'Vue' nor 'Svelte' appear in any indexed field. Documents the intentional non-indexing of why_it_matters. If this case starts failing, why_it_matters was added to the search index mappings — update this note and confirm the decision was deliberate."
+    }
   },
   {
     "caseId": "budget-ceiling-evicts-relevant-beliefs",
@@ -699,8 +673,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "negative-guidance-mongoose",
@@ -723,8 +696,7 @@
       "pinnedFacts": {
         "mustInclude": []
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "preference-flood-relevant-entity-survives",
@@ -737,8 +709,7 @@
       "relevantBeliefs": {
         "shouldOnlyInclude": ["b-ci-gha-entity"]
       }
-    },
-    "notes": ""
+    }
   },
   {
     "caseId": "cross-scope-non-user-edited-blocked",
@@ -752,8 +723,7 @@
         "shouldOnlyInclude": []
       },
       "pinnedFacts": { "mustExclude": ["b-protagonist-entity"] }
-    },
-    "notes": "b-protagonist-entity is domain:writing, not user_edited. Should be fully invisible in domain:code context."
+    }
   },
   {
     "caseId": "alias-two-word-shingle-dead-letter",
@@ -763,8 +733,7 @@
     "query": "what happens to dead letter messages that fail replay?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-dead-letter-queue"] }
-    },
-    "notes": "First case exercising a 2-token alias through the alias_search_analyzer shingle path. If this fails, shingle indexing is broken."
+    }
   },
   {
     "caseId": "alias-dlq-abbreviation-resolves",
@@ -784,8 +753,7 @@
     "query": "should I configure Jest for this project?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-vitest-pref"] }
-    },
-    "notes": "Tests counter-signal alias pattern: querying about the rejected tool surfaces the preference for the chosen tool."
+    }
   },
   {
     "caseId": "relation-type-expands-participants",
@@ -798,8 +766,7 @@
         "shouldOnlyInclude": ["b-auth-depends-redis", "b-redis-code"]
       },
       "openQuestions": { "mustInclude": ["b-auth-open-q"] }
-    },
-    "notes": "First case testing relation participant expansion. b-auth-depends-redis surfaces directly via alias 'auth redis'. b-redis-code surfaces via participant join, not alias match. b-auth-open-q is a participant but routes to openQuestions because type=open_question — verifies type routing still applies after expansion."
+    }
   },
   {
     "caseId": "relation-participant-open-question-routes-correctly",
@@ -813,8 +780,7 @@
       },
       "openQuestions": { "mustInclude": ["b-auth-open-q"] },
       "pinnedFacts": { "mustExclude": ["b-auth-open-q"] }
-    },
-    "notes": "Expansion pulls b-auth-open-q as a participant, but since searchText already has mustNot for open_question type, it can only appear if the expansion logic routes it through listPinnedOpenQuestions. This tests that relation expansion either filters open_question participants into the questions bucket or relies on the existing pinned question query to surface them independently."
+    }
   },
   {
     "caseId": "relation-expansion-respects-scope-filter",
@@ -827,8 +793,7 @@
         "shouldOnlyInclude": ["b-auth-depends-redis", "b-redis-code"],
         "mustExclude": ["b-redis-writing"]
       }
-    },
-    "notes": "b-redis-writing is domain:writing. Even if it were a participant, the scope filter in expandRelationParticipants must block it. This case passes with the current seed because b-redis-writing is not a participant — but documents the contract."
+    }
   },
   {
     "caseId": "subtype-expertise-retrieval",
@@ -838,8 +803,7 @@
     "query": "what's my react depth — should you explain hooks to me?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-react-entity"] }
-    },
-    "notes": "b-react-expertise is user:universal scope so it goes to personaPrelude, not relevantBeliefs. b-react-entity matches via canonical_name. This documents that expertise beliefs route through persona, not retrieval."
+    }
   },
   {
     "caseId": "pinned-plus-resolved-excluded-from-questions",
@@ -851,8 +815,7 @@
       "pinnedFacts": { "mustExclude": ["b-pinned-resolved-interaction"] },
       "openQuestions": { "mustExclude": ["b-pinned-resolved-interaction"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Tests interaction between pinned: true and resolved_at != null. resolved_at should win — the question is settled. If this fails, pinned status is overriding resolution."
+    }
   },
   {
     "caseId": "zero-reinforcement-fresh-belief-surfaces",
@@ -862,8 +825,7 @@
     "query": "how is our Turborepo monorepo structured?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-zero-reinforcement-fresh"] }
-    },
-    "notes": "Cold-start for a single belief. If reinforcement_count is used as a minimum threshold filter, this catches it."
+    }
   },
   {
     "caseId": "budget-zero-graceful-empty",
@@ -875,8 +837,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": [] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Boundary condition. Protects against divide-by-zero or off-by-one in budget allocation."
+    }
   },
   {
     "caseId": "budget-one-pinned-wins-over-relevant",
@@ -888,8 +849,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": ["b-db-decision"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Documents that pinned beliefs take priority in budget allocation. b-mongo-raw-driver would match via alias but pinned b-db-decision consumes the only slot."
+    }
   },
   {
     "caseId": "multi-scope-code-writing-dedup-no-double-surface",
@@ -899,8 +859,7 @@
     "query": "what tools do we use?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "No belief is dual-scoped in seed yet, but verifies the dedup path doesn't error when both scope branches return overlapping results. Compare with multi-scope-redis-both-surfaces which expects two distinct beliefs."
+    }
   },
   {
     "caseId": "empty-alias-belief-content-path-only",
@@ -910,8 +869,7 @@
     "query": "should you give me one recommendation or a list of options?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Documents that beliefs with empty alias arrays and no canonical_name token match are invisible to retrieval. They surface only via personaPrelude (if universal) or pinnedFacts (if pinned). b-comm-recommendation is universal+non-pinned so it goes to personaPrelude only."
+    }
   },
   {
     "caseId": "universal-scope-explicit-query-no-relevant",
@@ -922,8 +880,7 @@
     "expect": {
       "personaPrelude": { "nonEmpty": true, "contains": ["direct"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "All existing cases use domain:* scopes. This tests what happens when the scope IS user:universal. Universal beliefs should still route through personaPrelude, not relevantBeliefs."
+    }
   },
   {
     "caseId": "negation-query-still-surfaces-rejected-tool",
@@ -933,8 +890,7 @@
     "query": "I do NOT want to use Express, what should I use instead?",
     "expect": {
       "relevantBeliefs": { "shouldOnlyInclude": ["b-fastify-pref"] }
-    },
-    "notes": "Documents known limitation: text search cannot distinguish 'I want X' from 'I do not want X'. The belief surfaces because 'Express' is a counter-signal alias that isn't in the seed yet — this case would require adding 'express' as an alias to b-fastify-pref. If that alias is missing, the case tests content-path fallback instead."
+    }
   },
   {
     "caseId": "superseded-chain-query-terminal-only",
@@ -945,8 +901,7 @@
     "expect": {
       "pinnedFacts": { "mustInclude": ["b-linting-current"] },
       "relevantBeliefs": { "shouldOnlyInclude": [] }
-    },
-    "notes": "Simpler version of multi-hop-supersession-chain-all-excluded — queries a single superseded alias rather than both hops simultaneously."
+    }
   },
   {
     "caseId": "relation-does-not-appear-as-entity",
@@ -959,7 +914,6 @@
         "shouldOnlyInclude": ["b-auth-depends-redis", "b-redis-code"]
       },
       "openQuestions": { "mustInclude": ["b-auth-open-q"] }
-    },
-    "notes": "Both b-redis-code (entity) and b-auth-depends-redis (relation) match. Verifies relation-type beliefs route through relevantBeliefs, not a separate bucket."
+    }
   }
 ]

@@ -1,8 +1,6 @@
 # PrecisionMemBench
 
-Every major benchmark for LLM memory systems measures whether a model answered correctly, not whether the memory system retrieved correctly. These are not the same question. A system that returns its entire belief store achieves recall of 1.0; at the benchmark corpus sizes common today, a capable generative model can still find the right answer in the noise and score well on F1 or LLM-as-a-Judge. A system burying the right answer in ninety-five percent irrelevant context can pass. Nobody notices, because the benchmark never asked.
-
-PrecisionMemBench is the first benchmark that measures retrieval precision independently of the generative model downstream. Every case specifies not just what the memory system must return, but what it must not. Noise is a hard failure, not an invisible inference cost.
+PrecisionMemBench measures retrieval precision independently of the generative model downstream. Every case specifies not just what the memory system must return, but what it must not. Noise is a hard failure, not an invisible inference cost.
 
 **89 cases** covering: alias resolution · scope disambiguation · supersession chain exclusion · fuzzy matching · cross-user isolation · budget eviction · ranking stability · session-level noise isolation under multi-turn topic drift
 
@@ -18,11 +16,71 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 | Zep            | 0/48          | 8/77         | 0.06           | 0.81        | 99.10              | 452.3         |
 | Hindsight      | 0/48          | 8/77         | 0.04           | 0.27        | 516.21             | 102.9         |
 
-**Active passes** - measure whether the memory system itself retrieved correctly, independent of what the model did with the results. Every other pass type leaves that question unanswered.
+**Active passes** are the only column that answers whether the memory system itself retrieved correctly. A system cannot accumulate active passes by returning everything or nothing.
 
-Recall of 1.0 does not imply precision. A system can return the correct belief alongside many incorrect ones and still score perfectly on recall.
+Recall of 1.0 does not imply precision. Every comparison system returns the correct belief alongside many incorrect ones and scores perfectly on recall as a result. Mean precision of 0.05 to 0.09 means roughly 10 to 18 irrelevant beliefs are returned alongside each correct one.
 
-The live leaderboard is maintained on [HuggingFace Spaces](https://huggingface.co/spaces/tenurehq/precisionmembench).
+### Pass type breakdown
+
+Total pass counts require this breakdown to be interpreted correctly. All counts are over the 77 non-session cases.
+
+| System         | Active retrieval | Structural | Trivially empty |
+| -------------- | ---------------- | ---------- | --------------- |
+| Tenure         | 48               | 21         | 8               |
+| Vector (mxbai) | 0                | 8          | 3               |
+| Mem0           | 0                | 8          | 1               |
+| Zep            | 0                | 8          | 1               |
+| Hindsight      | 0                | 8          | 1               |
+
+- **Active retrieval pass** - the case carries a `retrievalPrecision` assertion and it is satisfied. This is the only pass type that demonstrates verified retrieval capability.
+- **Structural pass** - the case asserts scope isolation, supersession exclusion, or type routing without a precision assertion, and the structural property holds.
+- **Trivially empty pass** - the expected `relevantBeliefs` tier is empty by case design (empty query, `maxBeliefs: 0`, budget set to exact pinned count). Any system returning an empty set passes by construction.
+
+### Precision and recall on active-assertion cases
+
+Restricted to cases where `retrievalPrecision` is not null.
+
+| System         | Mean precision | Mean recall |
+| -------------- | -------------- | ----------- |
+| Tenure         | 1.00           | 1.00        |
+| Vector (mxbai) | 0.09           | 1.00        |
+| Mem0           | 0.05           | 0.99        |
+| Zep            | 0.08           | 0.95        |
+| Hindsight      | 0.05           | 1.00        |
+
+### Embedding model invariance
+
+Switching to a more capable embedding model does not close the precision gap. The benchmark was run against three models spanning a 20x range in scale.
+
+| Model                    | Precision | Recall | Passes | Mean (ms) | p95 (ms) |
+| ------------------------ | --------- | ------ | ------ | --------- | -------- |
+| nomic-embed-text (768)   | 0.09      | 1.0    | 11/77  | 43.36     | 85.21    |
+| mxbai-embed-large (1024) | 0.09      | 1.0    | 11/77  | 96.48     | 257.24   |
+| qwen3-8b (4096)          | 0.09      | 1.0    | 11/77  | 1130.95   | 2604.84  |
+
+All 11 passes in every configuration are structural or trivially empty. Active retrieval passes are 0 across all three models.
+
+### Session-level noise isolation
+
+The 12 session cases test whether beliefs introduced during off-topic drift turns contaminate retrieval on subsequent unrelated turns. The drift score is the fraction of retrieved non-pinned beliefs originating from drift-turn topics; 0 is perfect isolation.
+
+| Turn                        | Tenure | Vector | Mem0 | Zep  | Hindsight |
+| --------------------------- | ------ | ------ | ---- | ---- | --------- |
+| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       |
+| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      |
+| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       |
+
+### Retrieval and ingestion latency
+
+| System    | Mean (ms) | p50 (ms) | p95 (ms) | Ingestion total (s) |
+| --------- | --------- | -------- | -------- | ------------------- |
+| Tenure    | 13.49     | 9.77     | 53.99    | 0.98                |
+| Vector    | 96.48     | 71.87    | 257.24   | —                   |
+| Mem0      | 78.81     | 64.94    | 156.89   | 114.19              |
+| Zep       | 139.64    | 124.36   | 235.04   | 897.04              |
+| Hindsight | 672.15    | 589.86   | 1,185.33 | 173.28              |
+
+Single-turn latency understates the cost under session load. Hindsight reports 672ms mean single-turn but exceeds 2,700ms mean per session turn with p95 above 6,000ms.
 
 ## Pass taxonomy
 
@@ -35,6 +93,68 @@ Understanding the three pass types is required to interpret any results table.
 **Trivially empty pass** — the expected `relevantBeliefs` tier is empty by case design (empty query, `maxBeliefs: 0`, budget set to exact pinned count). Any system returning an empty set passes by construction. `retrievalPrecision` is null for these cases.
 
 Without this breakdown, aggregate pass counts do not distinguish verified retrieval from structural or empty-set passes.
+
+## Case categories
+
+The 89 cases cover the following categories. Session cases extend the corpus dynamically — beliefs are created and alias sets updated mid-session — validating that retrieval reflects the live store state rather than a snapshot.
+
+| Category                         | Cases  |
+| -------------------------------- | ------ |
+| Alias resolution                 | 23     |
+| Scope disambiguation             | 12     |
+| Session-level noise isolation    | 12     |
+| Fuzzy matching and prefix guards | 8      |
+| Design boundary cases            | 6      |
+| Type routing and open questions  | 6      |
+| Budget eviction and capacity     | 5      |
+| Relation expansion               | 4      |
+| Persona prelude content          | 4      |
+| Supersession chain exclusion     | 3      |
+| Ranking stability                | 3      |
+| Counter-signal retrieval         | 2      |
+| Cross-user isolation             | 1      |
+| Cold start behavior              | 1      |
+| **Total**                        | **89** |
+
+**Alias resolution** — whether variant surface forms (short-form, natural-language, multi-word) resolve to the correct belief.
+
+**Scope disambiguation** — whether scope alone correctly discriminates between beliefs sharing an alias across different domain scopes.
+
+**Supersession chain exclusion** — whether superseded beliefs are excluded at depth in a multi-hop chain. A query matching both a superseded and a superseding term must surface neither superseded belief; the active terminal belief surfaces via the pinned facts tier.
+
+**Fuzzy matching and prefix guards** — whether the retrieval layer correctly handles transpositions and near-miss terms while blocking prefix mismatches that edit distance alone would permit. Both pass and fail behaviors are documented as intentional design properties.
+
+**Counter-signal retrieval** — whether a query referencing a rejected or superseded term surfaces the active replacement belief via a counter-signal alias. Both cases carry an active retrieval precision assertion.
+
+**Relation expansion** — whether relation-type beliefs correctly surface and expand their participants via a one-hop join, with participant type routing and scope filters applied during expansion.
+
+**Session-level noise isolation** — whether beliefs introduced during off-topic drift turns contaminate retrieval on subsequent unrelated turns. The primary case is a 10-turn session with topic drift across 8 turns followed by an implicit return; per-turn assertions verify isolation at re-entry.
+
+**Budget eviction and capacity** — whether the retrieval layer handles slot constraints correctly, including graceful empty returns, single-slot priority, and resistance to high-reinforcement flooding at the budget ceiling.
+
+**Design boundary cases** — cases where both pass and fail behaviors are documented as intentional design properties.
+
+**Type routing and open questions** — whether open questions are retrieved by a separate path that returns only pinned open questions for the active scope and are never returned by text search.
+
+**Ranking stability** — whether retrieval results remain stable across equivalent queries without score-driven reordering artifacts.
+
+**Cross-user isolation** — whether beliefs belonging to a second user are structurally excluded from a primary user's retrieval regardless of semantic proximity.
+
+**Cold start behavior** — whether a new user with zero seeded beliefs returns a fully empty context without error.
+
+**Persona prelude content** — whether the persona prelude generated from the accumulated belief state is injected correctly and reflects the live belief store.
+
+## Metrics
+
+Four metrics are recorded per case:
+
+- **Retrieval precision and recall** — computed over the `relevantBeliefs` tier on cases where that tier carries an active assertion. Cases where this metric is structurally inapplicable record null and are excluded from aggregate computation.
+- **Pinned coverage** — recorded on cases where the `pinnedFacts` tier is asserted.
+- **Question precision and recall** — recorded on cases where the `openQuestions` tier is asserted.
+
+A pass requires all asserted tiers to be simultaneously satisfied. A case with `retrievalPrecision: 1.0` that also carries an unmet `pinnedCoverage` assertion fails.
+
+**Drift score** is reported for session cases: the fraction of retrieved non-pinned beliefs originating from drift-turn topics. 0 is perfect isolation.
 
 ## Baseline reports
 
@@ -162,10 +282,7 @@ Results from merged PRs are reflected on the [live leaderboard](https://huggingf
 
 ### Tenure
 
-Tenure's eval lives in the Tenure repo and runs directly against its
-`BeliefsReader` and `ContextBuilder` implementations. It is fully
-self-contained. The Atlas Local container starts and stops automatically. Reports land
-in test-results/. Results are re-produced on every pull request via CI.
+Tenure's eval lives in the Tenure repo and runs directly against its `BeliefsReader` and `ContextBuilder` implementations. It is fully self-contained. The Atlas Local container starts and stops automatically. Reports land in `test-results/`. Results are re-produced on every pull request via CI.
 
 ```bash
 git clone https://github.com/tenurehq/tenure.git
