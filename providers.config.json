@@ -40,5 +40,12 @@
     "seedDelayMs": 500,
     "beliefToText": "canonical_name_aliases",
     "supportsUpdate": true
+  },
+  "atomicmemory": {
+    "envVar": "ATOMICMEMORY_URL",
+    "defaultUrl": "http://localhost:8081",
+    "seedDelayMs": 500,
+    "beliefToText": "canonical_name_aliases",
+    "supportsUpdate": false
   }
 }

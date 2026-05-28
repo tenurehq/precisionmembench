@@ -19,16 +19,17 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 
 ### Retrieval Precision
 
-| System         | Active passes | Total passes | Mean precision | Mean recall | Retrieval p50 (ms) | Ingestion (s) |
-| -------------- | ------------- | ------------ | -------------- | ----------- | ------------------ | ------------- |
-| Tenure         | 43            | 89/89        | 1.00           | 1.00        | 9.77               | 0.98          |
-| SuperMemory    | 17            | 46/89        | 0.43           | 0.55        | 819.48             | -             |
-| YourMemory     | 0             | 22/89        | 0.17           | 0.88        | 313.39             | 16            |
-| Zep            | 0             | 9/89         | 0.09           | 0.95        | 124.36             | 897.04        |
-| Vector (mxbai) | 0             | 11/89        | 0.09           | 1.00        | 71.87              | -             |
-| Hindsight      | 0             | 9/89         | 0.06           | 1.00        | 589.86             | 173.28        |
-| Mem0           | 0             | 9/89         | 0.05           | 0.99        | 64.94              | 114.19        |
-| A-mem          | 0             | 9/89         | 0.05           | 0.99        | 13.8               | 178.77        |
+| Provider       | Active passes | Total passes | Mean precision | Mean recall | Retrieval p50 (ms) | Ingestion total (s) |
+| -------------- | ------------- | ------------ | -------------- | ----------- | ------------------ | ------------------- |
+| `tenure`       | 43/43         | 77/77        | 1.00           | 1.00        | 9.77               | 1.00                |
+| `supermemory`  | 17/17         | 44/77        | 0.43           | 0.55        | 819.48             | -                   |
+| `yourmemory`   | 0/0           | 21/77        | 0.17           | 0.88        | 313.39             | 16.40               |
+| `atomicmemory` | 0/0           | 9/77         | 0.15           | 0.95        | 71.01              | 658.90              |
+| `zep`          | 0/0           | 9/77         | 0.09           | 0.95        | 124.36             | 897.00              |
+| `vector`       | 0/0           | 11/77        | 0.09           | 1.00        | 71.87              | —                   |
+| `hindsight`    | 0/0           | 9/77         | 0.06           | 1.00        | 589.86             | 173.30              |
+| `mem0`         | 0/0           | 9/77         | 0.06           | 0.99        | 64.94              | 111.30              |
+| `a-mem`        | 0/0           | 9/77         | 0.06           | 0.99        | 13.80              | 178.80              |
 
 **Active passes** are the only column that answers whether the memory system itself retrieved correctly. A system cannot accumulate active passes by returning everything or nothing.
 
@@ -44,6 +45,7 @@ Total pass counts require this breakdown to be interpreted correctly. All counts
 | SuperMemory    | 17               | 18         | 9               |
 | YourMemory     | 0                | 15         | 6               |
 | Vector (mxbai) | 0                | 8          | 3               |
+| atomicmemory   | 0                | 6          | 3               |
 | Mem0           | 0                | 6          | 3               |
 | Zep            | 0                | 6          | 3               |
 | Hindsight      | 0                | 6          | 3               |
@@ -63,32 +65,39 @@ Total pass counts require this breakdown to be interpreted correctly. All counts
 
 All 11 passes in every configuration are structural or trivially empty. Active retrieval passes are 0 across all three models.
 
-### Session-level noise isolation
+### Session eval — noise isolation under multi-turn drift
 
 The 12 session cases test three orthogonal properties: whether beliefs introduced during off-topic drift turns contaminate retrieval on subsequent unrelated turns, whether latency degrades under session load, and whether beliefs introduced mid-session surface within the same session window via the alias enrichment flywheel.
 
 The drift score is the fraction of retrieved non-pinned beliefs originating from drift-turn topics; 0 is perfect isolation.
 
-| Turn                        | Tenure | Vector | Mem0 | Zep  | Hindsight | SuperMemory | YourMemory | A-mem |
-| --------------------------- | ------ | ------ | ---- | ---- | --------- | ----------- | ---------- | ----- |
-| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       | 0.0         | 0.0 ‡      | 1.0   |
-| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      | 0.0 ‡       | 0.86       | 0.94  |
-| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       | 0.0 ‡       | 0.85       | 0.94  |
+| Provider       | Turns passed | Pass rate | Mean drift | Noise isolation | Mean precision | Session p50 (ms) |
+| -------------- | ------------ | --------- | ---------- | --------------- | -------------- | ---------------- |
+| `tenure`       | 12/12        | 1.00      | 0.0000     | 1.00            | 1.0000         | 47.79            |
+| `supermemory`  | 2/12         | 0.17      | 0.1667 ‡   | 0.17            | 0.6000         | 867.83           |
+| `yourmemory`   | 1/12         | 0.08      | 0.7365     | 0.08            | 0.1965         | 430.49           |
+| `atomicmemory` | 0/12         | 0.00      | 0.8449     | 0.00            | 0.1551         | 355.08           |
+| `zep`          | 0/12         | 0.00      | 0.8888     | 0.00            | 0.1112         | 418.13           |
+| `vector`       | 0/12         | 0.00      | 0.9142     | 0.00            | 0.0858         | 256.75           |
+| `a-mem`        | 0/12         | 0.00      | 0.9259     | 0.00            | 0.0741         | 25.66            |
+| `hindsight`    | 0/12         | 0.00      | 0.9285     | 0.00            | 0.0715         | 1880.60          |
+| `mem0`         | 0/12         | 0.00      | 0.9398     | 0.00            | 0.0602         | 377.93           |
 
-‡ SuperMemory returned no results for these session cases. A drift score of 0.0 is recorded by construction; no beliefs were returned, so none could originate from drift topics. The correct belief also failed to surface, making this an empty-result failure rather than a genuine isolation pass.
+‡ SuperMemory & yourmemory returned no results for these session cases. A drift score of 0.0 is recorded by construction; no beliefs were returned, so none could originate from drift topics. The correct belief also failed to surface, making this an empty-result failure rather than a genuine isolation pass.
 
 ### Retrieval and ingestion latency
 
-| System      | Mean (ms) | p50 (ms) | p95 (ms) | Ingestion total (s) |
-| ----------- | --------- | -------- | -------- | ------------------- |
-| Tenure      | 13.49     | 9.77     | 53.99    | 0.98                |
-| SuperMemory | 821.27    | 819.48   | 1,228.91 | —                   |
-| YourMemory  | 361.81    | 313.39   | 548.07   | 16                  |
-| Vector      | 96.48     | 71.87    | 257.24   | —                   |
-| Mem0        | 78.81     | 64.94    | 156.89   | 114.19              |
-| Zep         | 139.64    | 124.36   | 235.04   | 897.04              |
-| Hindsight   | 672.15    | 589.86   | 1,185.33 | 173.28              |
-| A-mem       | 19.34     | 13.8     | 27.92    | 178.77              |
+| System       | Mean (ms) | p50 (ms) | p95 (ms) | Ingestion total (s) |
+| ------------ | --------- | -------- | -------- | ------------------- |
+| Tenure       | 13.49     | 9.77     | 53.99    | 0.98                |
+| SuperMemory  | 821.27    | 819.48   | 1,228.91 | —                   |
+| YourMemory   | 361.81    | 313.39   | 548.07   | 16                  |
+| atomicmemory | 66.77     | 71.01    | 86.07    | 658.90              |
+| Vector       | 96.48     | 71.87    | 257.24   | —                   |
+| Mem0         | 78.81     | 64.94    | 156.89   | 114.19              |
+| Zep          | 139.64    | 124.36   | 235.04   | 897.04              |
+| Hindsight    | 672.15    | 589.86   | 1,185.33 | 173.28              |
+| A-mem        | 19.34     | 13.8     | 27.92    | 178.77              |
 
 Single-turn latency understates the cost under session load. Hindsight reports 672ms mean single-turn but exceeds 2,700ms mean per session turn with p95 above 6,000ms.
 

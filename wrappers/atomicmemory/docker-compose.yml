@@ -1,0 +1,31 @@
+services:
+  atomicmemory-core:
+    image: ghcr.io/atomicstrata/atomicmemory-core@sha256:511227d38dae85f55b45ca96e8f5e92389374ec76ff82b7b95e0ce0abc6ebc5b
+    pull_policy: always
+    ports:
+      - "17350:17350"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - LLM_PROVIDER=openai-compatible
+      - LLM_MODEL=us.anthropic.claude-sonnet-4-6
+      - LLM_API_KEY=API_KEY
+      - LLM_API_URL=http://host.docker.internal:8000/api/v1
+      - EMBEDDING_PROVIDER=ollama
+      - EMBEDDING_MODEL=mxbai-embed-large
+      - EMBEDDING_DIMENSIONS=1024
+      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+    volumes:
+      - $HOME/.atomicstrata/atomicmemory-docker:/var/lib/atomicmemory/postgres
+
+  atomicmemory-wrapper:
+    build: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      - atomicmemory-core
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - ATOMICMEMORY_URL=http://atomicmemory-core:17350
+      - ATOMICMEMORY_API_KEY=local-dev-key
