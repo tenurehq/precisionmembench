@@ -1,0 +1,30 @@
+services:
+  yourmemory:
+    image: ghcr.io/sachitrafa/yourmemory@sha256:4b7be5be096705c464899965923a3a26565eb8d5e0ba18dc09978ca473ce24b6
+    command: python -c "import uvicorn; uvicorn.run('src.app:app', host='0.0.0.0', port=8005)"
+    ports:
+      - "8005:8005"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import socket, sys; s = socket.create_connection(('localhost', 8005), timeout=3); s.close(); sys.exit(0)",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+
+  yourmemory-wrapper:
+    build: .
+    ports:
+      - "8082:8082"
+    depends_on:
+      yourmemory:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - YOURMEMORY_URL=http://yourmemory:8000

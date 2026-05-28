@@ -22,5 +22,11 @@
     "defaultUrl": "http://localhost:8080",
     "seedDelayMs": 5500,
     "beliefToText": "canonical_name_aliases"
+  },
+  "yourmemory": {
+    "envVar": "YOURMEMORY_URL",
+    "defaultUrl": "http://localhost:8082",
+    "seedDelayMs": 1000,
+    "beliefToText": "canonical_name_aliases"
   }
 }

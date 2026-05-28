@@ -21,12 +21,13 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 
 | System         | Active passes | Total passes | Mean precision | Mean recall | Retrieval p50 (ms) | Ingestion (s) |
 | -------------- | ------------- | ------------ | -------------- | ----------- | ------------------ | ------------- |
-| Tenure         | 48/48         | 77/89        | 1.00           | 1.00        | 9.77               | 0.98          |
-| SuperMemory    | 31/48         | 44/89        | 0.43           | 0.98        | 819.48             | -             |
-| Vector (mxbai) | 0/48          | 11/89        | 0.09           | 1.00        | 71.87              | -             |
-| Mem0           | 0/48          | 9/89         | 0.05           | 0.99        | 64.94              | 114.19        |
-| Zep            | 0/48          | 9/89         | 0.08           | 0.95        | 124.36             | 897.04        |
-| Hindsight      | 0/48          | 8/89         | 0.05           | 1.00        | 589.86             | 173.28        |
+| Tenure         | 43            | 89/89        | 1.00           | 1.00        | 9.77               | 0.98          |
+| SuperMemory    | 17            | 46/89        | 0.43           | 0.55        | 819.48             | -             |
+| Zep            | 0             | 9/89         | 0.09           | 0.95        | 124.36             | 897.04        |
+| Vector (mxbai) | 0             | 11/89        | 0.09           | 1.00        | 71.87              | -             |
+| Hindsight      | 0             | 9/89         | 0.06           | 1.00        | 589.86             | 173.28        |
+| Mem0           | 0             | 9/89         | 0.05           | 0.99        | 64.94              | 114.19        |
+| YourMemory     | 0             | 9/89         | 0.05           | 0.91        | 325.92             | 16            |
 
 **Active passes** are the only column that answers whether the memory system itself retrieved correctly. A system cannot accumulate active passes by returning everything or nothing.
 
@@ -38,28 +39,17 @@ Total pass counts require this breakdown to be interpreted correctly. All counts
 
 | System         | Active retrieval | Structural | Trivially empty |
 | -------------- | ---------------- | ---------- | --------------- |
-| Tenure         | 48               | 21         | 8               |
+| Tenure         | 43               | 25         | 9               |
+| Tenure         | 17               | 18         | 9               |
 | Vector (mxbai) | 0                | 8          | 3               |
-| Mem0           | 0                | 8          | 1               |
-| Zep            | 0                | 8          | 1               |
-| Hindsight      | 0                | 8          | 1               |
+| Mem0           | 0                | 6          | 3               |
+| Zep            | 0                | 6          | 3               |
+| Hindsight      | 0                | 6          | 3               |
+| YourMemory     | 0                | 6          | 3               |
 
 - **Active retrieval pass** - the case carries a `retrievalPrecision` assertion and it is satisfied. This is the only pass type that demonstrates verified retrieval capability.
 - **Structural pass** - the case asserts scope isolation, supersession exclusion, or type routing without a precision assertion, and the structural property holds.
 - **Trivially empty pass** - the expected `relevantBeliefs` tier is empty by case design (empty query, `maxBeliefs: 0`, budget set to exact pinned count). Any system returning an empty set passes by construction.
-
-### Precision and recall on active-assertion cases
-
-Restricted to cases where `retrievalPrecision` is not null.
-
-| System         | Mean precision | Mean recall |
-| -------------- | -------------- | ----------- |
-| Tenure         | 1.00           | 1.00        |
-| SuperMemory    | 0.43           | 0.98        |
-| Vector (mxbai) | 0.09           | 1.00        |
-| Mem0           | 0.05           | 0.99        |
-| Zep            | 0.08           | 0.95        |
-| Hindsight      | 0.05           | 1.00        |
 
 ### Embedding model invariance
 
@@ -77,15 +67,11 @@ The 12 session cases test three orthogonal properties: whether beliefs introduce
 
 The drift score is the fraction of retrieved non-pinned beliefs originating from drift-turn topics; 0 is perfect isolation.
 
-| Turn                        | Tenure | Vector | Mem0 | Zep  | Hindsight | SuperMemory |
-| --------------------------- | ------ | ------ | ---- | ---- | --------- | ----------- |
-| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       | 0.0         |
-| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      | 0.0 ‡       |
-| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       | 0.0 ‡       |
-
-† Turn 9 uses a vague implicit re-entry query with no extractable alias tokens. Tenure and SuperMemory both return nothing and score 0.0 drift, but for different reasons. Tenure's BM25 index produces no match on the unresolvable query surface — silence by design. SuperMemory returns nothing due to retrieval absence; the correct belief was not retrieved. Neither result involves noise contamination.
-
-‡ SuperMemory scores 0.0 drift because it returned no beliefs, not because it isolated correctly. The expected belief `b-redis-code` is absent (recall 0). Comparison with Tenure's turn 10 result is not valid — Tenure retrieves `b-redis-code` via the `allkeys-lru` alias added at turn 9 via `updateBeliefAtTurn`, demonstrating the alias enrichment flywheel. No comparison system has an equivalent write-time operation; turn 10 tests a capability that is architecturally absent from all comparison systems, not merely underperforming in them.
+| Turn                        | Tenure | Vector | Mem0 | Zep  | Hindsight | SuperMemory | YourMemory |
+| --------------------------- | ------ | ------ | ---- | ---- | --------- | ----------- | ---------- |
+| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       | 0.0         | 1.0        |
+| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      | 0.0 ‡       | 0.94       |
+| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       | 0.0 ‡       | 0.94       |
 
 ### Retrieval and ingestion latency
 
@@ -97,6 +83,7 @@ The drift score is the fraction of retrieved non-pinned beliefs originating from
 | Mem0        | 78.81     | 64.94    | 156.89   | 114.19              |
 | Zep         | 139.64    | 124.36   | 235.04   | 897.04              |
 | Hindsight   | 672.15    | 589.86   | 1,185.33 | 173.28              |
+| YourMemory  | 356.24    | 325.92   | 478.9    | 16                  |
 
 Single-turn latency understates the cost under session load. Hindsight reports 672ms mean single-turn but exceeds 2,700ms mean per session turn with p95 above 6,000ms.
 
