@@ -23,7 +23,7 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 | -------------- | ------------- | ------------ | -------------- | ----------- | ------------------ | ------------- |
 | Tenure         | 43            | 89/89        | 1.00           | 1.00        | 9.77               | 0.98          |
 | SuperMemory    | 17            | 46/89        | 0.43           | 0.55        | 819.48             | -             |
-| YourMemory     | 0             | 9/89         | 0.14           | 0.90        | 317.14             | 17            |
+| YourMemory     | 0             | 22/89        | 0.17           | 0.88        | 313.39             | 16            |
 | Zep            | 0             | 9/89         | 0.09           | 0.95        | 124.36             | 897.04        |
 | Vector (mxbai) | 0             | 11/89        | 0.09           | 1.00        | 71.87              | -             |
 | Hindsight      | 0             | 9/89         | 0.06           | 1.00        | 589.86             | 173.28        |
@@ -42,7 +42,7 @@ Total pass counts require this breakdown to be interpreted correctly. All counts
 | -------------- | ---------------- | ---------- | --------------- |
 | Tenure         | 43               | 25         | 9               |
 | SuperMemory    | 17               | 18         | 9               |
-| YourMemory     | 0                | 6          | 3               |
+| YourMemory     | 0                | 15         | 6               |
 | Vector (mxbai) | 0                | 8          | 3               |
 | Mem0           | 0                | 6          | 3               |
 | Zep            | 0                | 6          | 3               |
@@ -71,9 +71,9 @@ The drift score is the fraction of retrieved non-pinned beliefs originating from
 
 | Turn                        | Tenure | Vector | Mem0 | Zep  | Hindsight | SuperMemory | YourMemory | A-mem |
 | --------------------------- | ------ | ------ | ---- | ---- | --------- | ----------- | ---------- | ----- |
-| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       | 0.0         | 1.0        | 1.0   |
-| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      | 0.0 ‡       | 0.83       | 0.94  |
-| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       | 0.0 ‡       | 0.8        | 0.94  |
+| Turn 9 (implicit re-entry)  | 0.0    | 1.0    | 1.0  | 1.0  | 1.0       | 0.0         | 0.0 ‡      | 1.0   |
+| Turn 10 (explicit re-entry) | 0.0    | 0.94   | 1.0  | 1.0  | 0.94      | 0.0 ‡       | 0.86       | 0.94  |
+| Cross-session formative     | 0.0    | 0.94   | 1.0  | 0.92 | 1.0       | 0.0 ‡       | 0.85       | 0.94  |
 
 ‡ SuperMemory returned no results for these session cases. A drift score of 0.0 is recorded by construction; no beliefs were returned, so none could originate from drift topics. The correct belief also failed to surface, making this an empty-result failure rather than a genuine isolation pass.
 
@@ -83,7 +83,7 @@ The drift score is the fraction of retrieved non-pinned beliefs originating from
 | ----------- | --------- | -------- | -------- | ------------------- |
 | Tenure      | 13.49     | 9.77     | 53.99    | 0.98                |
 | SuperMemory | 821.27    | 819.48   | 1,228.91 | —                   |
-| YourMemory  | 350.78    | 317.14   | 573.35   | 17                  |
+| YourMemory  | 361.81    | 313.39   | 548.07   | 16                  |
 | Vector      | 96.48     | 71.87    | 257.24   | —                   |
 | Mem0        | 78.81     | 64.94    | 156.89   | 114.19              |
 | Zep         | 139.64    | 124.36   | 235.04   | 897.04              |

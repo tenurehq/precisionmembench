@@ -1,6 +1,6 @@
 services:
   yourmemory:
-    image: ghcr.io/sachitrafa/yourmemory@sha256:3b0638fa5a7908c86132397a75fa7a498eb2458346ac3f685e4329e73f3bbd9c
+    image: ghcr.io/sachitrafa/yourmemory@sha256:c015a2cf12892cbbc996ea3b82b1124b56e92f5b404cce576bbf45c0de1504a4
     command: python -c "import uvicorn; uvicorn.run('src.app:app', host='0.0.0.0', port=8005)"
     ports:
       - "8005:8005"

@@ -69,7 +69,7 @@ def search(req: SearchRequest):
         "userId": req.user_id,
         "query": req.query,
         "topK": TOP_K,
-        "scoreThreshold": 0.5,
+        "scoreThreshold": 0.55,
         "currentPath": req.scope
     })
     memories = r.json().get("memories", [])
