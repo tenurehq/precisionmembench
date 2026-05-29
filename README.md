@@ -22,7 +22,8 @@ Paper: [arXiv](https://arxiv.org/abs/2605.11325) — Dataset: [HuggingFace](http
 | Provider       | Active passes | Total passes | Mean precision | Mean recall | Retrieval p50 (ms) | Ingestion total (s) |
 | -------------- | ------------- | ------------ | -------------- | ----------- | ------------------ | ------------------- |
 | `tenure`       | 43/43         | 77/77        | 1.00           | 1.00        | 9.77               | 1.00                |
-| `supermemory`  | 17/17         | 44/77        | 0.43           | 0.55        | 819.48             | -                   |
+| `supermemory`  | 17/17         | 44/77        | 0.43           | 0.55        | 819.48             | 0.00                |
+| `agentmemory`  | 0/0           | 7/77         | 0.17           | 0.97        | 82.28              | 1.10                |
 | `yourmemory`   | 0/0           | 21/77        | 0.17           | 0.88        | 313.39             | 16.40               |
 | `atomicmemory` | 0/0           | 9/77         | 0.15           | 0.95        | 71.01              | 658.90              |
 | `zep`          | 0/0           | 9/77         | 0.09           | 0.95        | 124.36             | 897.00              |
@@ -39,17 +40,18 @@ Recall of 1.0 does not imply precision. Every comparison system returns the corr
 
 Total pass counts require this breakdown to be interpreted correctly. All counts are over the 77 non-session cases.
 
-| System         | Active retrieval | Structural | Trivially empty |
+| Provider       | Active retrieval | Structural | Trivially empty |
 | -------------- | ---------------- | ---------- | --------------- |
-| Tenure         | 43               | 25         | 9               |
-| SuperMemory    | 17               | 18         | 9               |
-| YourMemory     | 0                | 15         | 6               |
-| Vector (mxbai) | 0                | 8          | 3               |
-| atomicmemory   | 0                | 6          | 3               |
-| Mem0           | 0                | 6          | 3               |
-| Zep            | 0                | 6          | 3               |
-| Hindsight      | 0                | 6          | 3               |
-| A-mem          | 0                | 6          | 3               |
+| `tenure`       | 43               | 25         | 9               |
+| `supermemory`  | 17               | 18         | 9               |
+| `a-mem`        | 0                | 6          | 3               |
+| `agentmemory`  | 0                | 5          | 2               |
+| `atomicmemory` | 0                | 6          | 3               |
+| `hindsight`    | 0                | 6          | 3               |
+| `mem0`         | 0                | 6          | 3               |
+| `vector`       | 0                | 8          | 3               |
+| `yourmemory`   | 0                | 15         | 6               |
+| `zep`          | 0                | 6          | 3               |
 
 - **Active retrieval pass** - the case carries a `retrievalPrecision` assertion and it is satisfied. This is the only pass type that demonstrates verified retrieval capability.
 - **Structural pass** - the case asserts scope isolation, supersession exclusion, or type routing without a precision assertion, and the structural property holds.
@@ -74,8 +76,9 @@ The drift score is the fraction of retrieved non-pinned beliefs originating from
 | Provider       | Turns passed | Pass rate | Mean drift | Noise isolation | Mean precision | Session p50 (ms) |
 | -------------- | ------------ | --------- | ---------- | --------------- | -------------- | ---------------- |
 | `tenure`       | 12/12        | 1.00      | 0.0000     | 1.00            | 1.0000         | 47.79            |
-| `supermemory`  | 2/12         | 0.17      | 0.1667 ‡   | 0.17            | 0.6000         | 867.83           |
+| `supermemory`  | 2/12         | 0.17      | 0.1667     | 0.17            | 0.6000         | 867.83           |
 | `yourmemory`   | 1/12         | 0.08      | 0.7365     | 0.08            | 0.1965         | 430.49           |
+| `agentmemory`  | 0/12         | 0.00      | 0.8087     | 0.00            | 0.1913         | 98.49            |
 | `atomicmemory` | 0/12         | 0.00      | 0.8449     | 0.00            | 0.1551         | 355.08           |
 | `zep`          | 0/12         | 0.00      | 0.8888     | 0.00            | 0.1112         | 418.13           |
 | `vector`       | 0/12         | 0.00      | 0.9142     | 0.00            | 0.0858         | 256.75           |
@@ -84,22 +87,6 @@ The drift score is the fraction of retrieved non-pinned beliefs originating from
 | `mem0`         | 0/12         | 0.00      | 0.9398     | 0.00            | 0.0602         | 377.93           |
 
 ‡ SuperMemory & yourmemory returned no results for these session cases. A drift score of 0.0 is recorded by construction; no beliefs were returned, so none could originate from drift topics. The correct belief also failed to surface, making this an empty-result failure rather than a genuine isolation pass.
-
-### Retrieval and ingestion latency
-
-| System       | Mean (ms) | p50 (ms) | p95 (ms) | Ingestion total (s) |
-| ------------ | --------- | -------- | -------- | ------------------- |
-| Tenure       | 13.49     | 9.77     | 53.99    | 0.98                |
-| SuperMemory  | 821.27    | 819.48   | 1,228.91 | —                   |
-| YourMemory   | 361.81    | 313.39   | 548.07   | 16                  |
-| atomicmemory | 66.77     | 71.01    | 86.07    | 658.90              |
-| Vector       | 96.48     | 71.87    | 257.24   | —                   |
-| Mem0         | 78.81     | 64.94    | 156.89   | 114.19              |
-| Zep          | 139.64    | 124.36   | 235.04   | 897.04              |
-| Hindsight    | 672.15    | 589.86   | 1,185.33 | 173.28              |
-| A-mem        | 19.34     | 13.8     | 27.92    | 178.77              |
-
-Single-turn latency understates the cost under session load. Hindsight reports 672ms mean single-turn but exceeds 2,700ms mean per session turn with p95 above 6,000ms.
 
 ## Pass taxonomy
 

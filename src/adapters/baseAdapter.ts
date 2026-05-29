@@ -20,14 +20,13 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Belief } from "../types/belief.js";
 
-export type ProviderName = "mem0" | "zep" | "hindsight";
-
 interface ProviderConfigJson {
   envVar: string;
   defaultUrl: string;
   seedDelayMs: number;
   beliefToText?: "canonical_name_aliases" | "content";
   supportsUpdate?: boolean;
+  waitAfterSeed?: boolean;
 }
 
 const CONFIG_PATH = resolve(
@@ -35,9 +34,11 @@ const CONFIG_PATH = resolve(
   "../../providers.config.json",
 );
 
-const providerConfigs: Record<ProviderName, ProviderConfigJson> = JSON.parse(
+const providerConfigs: Record<string, ProviderConfigJson> = JSON.parse(
   readFileSync(CONFIG_PATH, "utf8"),
 );
+
+export type ProviderName = keyof typeof providerConfigs;
 
 export interface SeedResponseBody {
   [key: string]: unknown;
@@ -102,7 +103,7 @@ export class BaseAdapter {
   protected readonly seedDelayMs: number;
   protected readonly beliefToTextMode: "canonical_name_aliases" | "content";
   protected readonly supportsUpdate: boolean;
-
+  protected readonly waitAfterSeed: boolean;
   protected seedIndex = new Map<string, Belief>();
 
   ingestionReport: { beliefId: string; latencyMs: number }[] = [];
@@ -113,6 +114,7 @@ export class BaseAdapter {
     this.seedDelayMs = cfg.seedDelayMs;
     this.beliefToTextMode = cfg.beliefToText ?? "canonical_name_aliases";
     this.supportsUpdate = cfg.supportsUpdate ?? false;
+    this.waitAfterSeed = cfg.waitAfterSeed ?? false;
   }
 
   loadFixture(beliefs: Belief[]): void {
@@ -141,6 +143,7 @@ export class BaseAdapter {
           text: this.beliefToText(belief),
           user_id: belief.user_id as string,
           metadata: this.seedMetadata(belief),
+          aliases: belief.aliases,
         }),
       });
 
@@ -161,6 +164,14 @@ export class BaseAdapter {
     console.log(
       `\n\n✅ Seeded ${total} beliefs in ${(totalMs / 1000).toFixed(1)}s\n`,
     );
+
+    if (this.waitAfterSeed) {
+      console.log(`⏳ Waiting for ${this.providerName} to finish indexing...`);
+      const waitStart = performance.now();
+      await fetch(`${this.baseUrl}/wait`, { method: "POST" });
+      const waitMs = Math.round(performance.now() - waitStart);
+      console.log(`✅ Indexing complete (${(waitMs / 1000).toFixed(1)}s)\n`);
+    }
   }
 
   /**

@@ -1,0 +1,56 @@
+services:
+  iii-init:
+    image: busybox:1.36
+    user: "0:0"
+    volumes:
+      - iii-data:/data
+    entrypoint: ["sh", "-c", "chown -R 65532:65532 /data && chmod 755 /data"]
+    restart: "no"
+
+  iii-engine:
+    image: iiidev/iii@sha256:3d005602abcafa8bff7ddcbd9d3af78169cf89b619b615405e6908be55ed5254
+    user: "65532:65532"
+    depends_on:
+      iii-init:
+        condition: service_completed_successfully
+    ports:
+      - "49134:49134"
+      - "3111:3111"
+      - "3112:3112"
+      - "9464:9464"
+    volumes:
+      - iii-data:/data
+      - ./iii-config.docker.yaml:/app/config.yaml:ro
+    restart: unless-stopped
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    environment:
+      - EMBEDDING_PROVIDER=local
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=http://192.168.1.154:11434/v1
+      - OPENAI_MODEL=openai/us.anthropic.claude-sonnet-4-6
+      - OPENAI_EMBEDDING_MODEL=mxbai-embed-large:latest
+      - OPENAI_EMBEDDING_DIMENSIONS=1024
+      - AGENTMEMORY_AUTO_COMPRESS=true
+      - AGENTMEMORY_SLOTS=true
+      - AGENTMEMORY_REFLECT=true
+      - AGENTMEMORY_INJECT_CONTEXT=true
+      - GRAPH_EXTRACTION_ENABLED=true
+      - CONSOLIDATION_ENABLED=true
+
+  agentmemory-wrapper:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8084:8084"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - AGENTMEMORY_URL=http://agentmemory:3111
+
+volumes:
+  iii-data:

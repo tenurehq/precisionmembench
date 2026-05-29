@@ -620,7 +620,6 @@ for (const tc of cases) {
       retrievalLatencyMs: Math.round((buildEnd - buildStart) * 100) / 100,
     });
 
-    if (failures.length > 0) t.fail(failures.join("\n"));
-    else t.pass();
+    t.is(failures.length, 0, failures.join(" | "));
   });
 }

@@ -764,7 +764,7 @@ for (const sessionCase of sessionCases) {
       const allFailures = sessionReport
         .filter((r) => r.caseId === sessionCase.caseId && !r.passed)
         .flatMap((r) => r.failures);
-      t.fail(allFailures.join("\n"));
+      t.is(0, allFailures.length, allFailures.join(" | "));
     } else {
       t.pass();
     }

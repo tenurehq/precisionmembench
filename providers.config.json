@@ -47,5 +47,12 @@
     "seedDelayMs": 500,
     "beliefToText": "canonical_name_aliases",
     "supportsUpdate": false
+  },
+  "agentmemory": {
+    "envVar": "AGENTMEMORY_URL",
+    "defaultUrl": "http://localhost:8084",
+    "seedDelayMs": 500,
+    "beliefToText": "canonical_name_aliases",
+    "supportsUpdate": true
   }
 }
